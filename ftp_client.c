@@ -4,6 +4,7 @@ int main(void)
 {
  
     netbuf *nbuf;
+ 
  int ftpCommand
     (
     int    ctrlSock, /* fd of control connection socket */
@@ -15,6 +16,7 @@ int main(void)
     int    arg5,
     int    arg6
     )
+  
   ftpCommand (ctrlSock, "TYPE I", 0, 0, 0, 0, 0, 0);     /* image-type xfer */
   ftpCommand (ctrlSock, "STOR %s", file, 0, 0, 0, 0, 0); /* init file write */
  
