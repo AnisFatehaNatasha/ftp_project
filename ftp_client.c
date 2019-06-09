@@ -1,13 +1,9 @@
- 
-=={{header|C}}==
-Using [http://nbpfaus.net/~pfau/ftplib/ ftplib]
-<lang c>
 #include <ftplib.h>
-
+ 
 int main(void)
 {
     netbuf *nbuf;
-
+ 
     FtpInit();
     FtpConnect("kernel.org", &nbuf);
     FtpLogin("anonymous", "", nbuf);
@@ -16,8 +12,7 @@ int main(void)
     FtpDir((void*)0, ".", nbuf);
     FtpGet("ftp.README", "README", FTPLIB_ASCII, nbuf);
     FtpQuit(nbuf);
-
+ 
     return 0;
 }
-</lang>
-
+ 
