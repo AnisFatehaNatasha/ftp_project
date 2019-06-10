@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <sys/socket.h>
 #include<netinet/in.h>
+#include<stdlib.h>
 #include<time.h>
 #define PORT_TIME       10             /* "time" (not available on RedHat) */
 #define PORT_FTP        2017            /* FTP connection port */
