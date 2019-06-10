@@ -1,64 +1,49 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-#include <sys/types.h>
+#include <errno.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h> 
+#include<netinet/in.h>
+#include<time.h>
+#define PORT_TIME       10             /* "time" (not available on RedHat) */
+#define PORT_FTP        2017            /* FTP connection port */
+#define SERVER_ADDR     "10.0.2.15"     /* localhost */
+#define MAXBUF          1024
 
-void error(const char *msg)
-{
-    perror(msg);
-    exit(0);
-}
+int main()
+{   int sockfd;
+    struct sockaddr_in dest;
+    char buffer[MAXBUF];
 
-int main(int argc, char *argv[])
-{
-    int sockfd, portno, n;
-    struct sockaddr_in serv_addr;
-    struct hostent *server;
-
-    char buffer[256];
-    
-    if (argc < 3) {
-       fprintf(stderr,"usage %s hostname port\n", argv[0]);
-       exit(0);
-    }
-    portno = atoi(argv[2]);
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0) 
-        error("ERROR opening socket");
-    server = gethostbyname(argv[1]);
-    if (server == NULL) {
-        fprintf(stderr,"ERROR, no such host\n");
-        exit(0);
-    }
-    bzero((char *) &serv_addr, sizeof(serv_addr));
-    serv_addr.sin_family = AF_INET;
-    bcopy((char *)server->h_addr, 
-         (char *)&serv_addr.sin_addr.s_addr,
-         server->h_length);
-    serv_addr.sin_port = htons(portno);
-    if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) 
-        error("ERROR connecting");
-    printf("Client: ");
-    while(1)
+    /*---Open socket for streaming---*/
+    if ( (sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 )
     {
-        bzero(buffer,256);
-        fgets(buffer,255,stdin);
-        n = write(sockfd,buffer,strlen(buffer));
-        if (n < 0) 
-             error("ERROR writing to socket");
-        bzero(buffer,256);
-        n = read(sockfd,buffer,255);
-        if (n < 0) 
-             error("ERROR reading from socket");
-        printf("Server : %s\n",buffer);
-        int i = strncmp("Bye" , buffer , 3);
-        if(i == 0)
-               break;
+        perror("Socket");
+        exit(errno);
     }
+
+    /*---Initialize server address/port struct---*/
+    bzero(&dest, sizeof(dest));
+    dest.sin_family = AF_INET;
+    dest.sin_port = htons(PORT_FTP);
+    if ( inet_aton(SERVER_ADDR, &dest.sin_addr.s_addr) == 0 )
+    {
+        perror(SERVER_ADDR);
+        exit(errno);
+    }
+
+    /*---Connect to server---*/
+    if ( connect(sockfd, (struct sockaddr*)&dest, sizeof(dest)) != 0 )
+    {
+        perror("Connect ");
+        exit(errno);
+    }
+
+    /*---Get "Hello?"---*/
+    bzero(buffer, MAXBUF);
+    recv(sockfd, buffer, sizeof(buffer), 0);
+    printf("%s", buffer);
+
+    /*---Clean up---*/
     close(sockfd);
     return 0;
 }
