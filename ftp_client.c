@@ -8,7 +8,7 @@
 #include<unistd.h>
 #include<time.h>
 #define PORT_TIME       10             /* "time" (not available on RedHat) */
-#define PORT_FTP        2017            /* FTP connection port */
+#define PORT_FTP        9002            /* FTP connection port */
 #define SERVER_ADDR     "10.0.2.15"     /* localhost */
 #define MAXBUF          1024
 
