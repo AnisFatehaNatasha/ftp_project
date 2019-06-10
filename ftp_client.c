@@ -27,7 +27,7 @@ int main()
     bzero(&dest, sizeof(dest));
     dest.sin_family = AF_INET;
     dest.sin_port = htons(PORT_FTP);
-    if ( inet_aton(SERVER_ADDR, &dest.sin_addr.s_addr) == 0 )
+    if ( inet_aton(SERVER_ADDR, &(dest.sin_addr.s_addr)) == 0 )
     {
         perror(SERVER_ADDR);
         exit(errno);
